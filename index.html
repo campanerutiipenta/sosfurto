@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SOS Furto</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+body{
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:
+  linear-gradient(
+    135deg,
+    #dcecff,
+    #f5f8ff,
+    #ffffff
+  );
+
+  position:relative;
+}
+
+body::before{
+
+  content:"";
+
+  position:absolute;
+
+  width:500px;
+  height:500px;
+
+  border-radius:50%;
+
+  background:
+  radial-gradient(
+    circle,
+    rgba(112,136,255,.14),
+    transparent 72%
+  );
+
+  top:-220px;
+  left:-220px;
+
+  filter:blur(60px);
+}
+
+body::after{
+
+  content:"";
+
+  position:absolute;
+
+  width:500px;
+  height:500px;
+
+  border-radius:50%;
+
+  background:
+  radial-gradient(
+    circle,
+    rgba(70,220,255,.10),
+    transparent 72%
+  );
+
+  bottom:-220px;
+  right:-220px;
+
+  filter:blur(60px);
+}
+
+/* CELULAR */
+
+.phone{
+
+  width:345px;
+  height:735px;
+
+  border-radius:52px;
+
+  border:10px solid #0c0c0c;
+
+  overflow:hidden;
+
+  position:relative;
+
+  background:
+  rgba(255,255,255,.18);
+
+  backdrop-filter:
+  blur(5px)
+  saturate(170%);
+
+  box-shadow:
+  0 35px 70px rgba(0,0,0,.18);
+}
+
+/* brilho */
+
+.phone::before{
+
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  background:
+  linear-gradient(
+    135deg,
+    rgba(255,255,255,.16),
+    rgba(255,255,255,.03)
+  );
+
+  pointer-events:none;
+}
+
+/* dynamic island */
+
+.dynamic-island{
+
+  position:absolute;
+
+  top:14px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:120px;
+  height:34px;
+
+  border-radius:22px;
+
+  background:#000;
+
+  z-index:10;
+}
+
+/* conteúdo */
+
+.content{
+
+  padding:
+  72px
+  18px
+  110px;
+}
+
+/* topo */
+
+.top{
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.red-dot{
+
+  width:72px;
+  height:72px;
+
+  border-radius:50%;
+
+  background:
+  linear-gradient(
+    180deg,
+    #ff7474,
+    #ff1f1f
+  );
+
+  box-shadow:
+  0 12px 25px rgba(255,0,0,.24);
+
+  z-index:2;
+}
+
+.logo{
+
+  margin-top:-12px;
+
+  padding:
+  8px
+  18px;
+
+  border-radius:20px;
+
+  background:
+  rgba(255,255,255,.34);
+
+  border:
+  1px solid rgba(255,255,255,.35);
+
+  backdrop-filter:
+  blur(4px);
+
+  color:#555;
+
+  z-index:1;
+}
+
+/* CARD */
+
+.card{
+
+  margin-top:36px;
+
+  border-radius:32px;
+
+  padding:22px;
+
+  background:
+  rgba(255,255,255,.18);
+
+  border:
+  1px solid rgba(255,255,255,.28);
+
+  backdrop-filter:
+  blur(4px);
+
+  box-shadow:
+  0 12px 30px rgba(0,0,0,.05);
+}
+
+.card p{
+
+  color:#444;
+
+  font-size:17px;
+
+  line-height:1.45;
+
+  margin-bottom:18px;
+}
+
+/* opções */
+
+.options{
+
+  display:flex;
+  flex-direction:column;
+
+  gap:12px;
+}
+
+.option{
+
+  border:none;
+
+  cursor:pointer;
+
+  text-align:left;
+
+  padding:
+  15px
+  16px;
+
+  border-radius:20px;
+
+  color:white;
+
+  font-size:15px;
+
+  background:
+  linear-gradient(
+    135deg,
+    #6e5dff,
+    #4a2dff
+  );
+
+  box-shadow:
+  0 8px 18px rgba(72,40,255,.18);
+
+  transition:
+  transform .35s cubic-bezier(.2,1.5,.4,1),
+  box-shadow .35s;
+}
+
+.option:hover{
+
+  transform:
+  scale(1.04)
+  translateY(-2px);
+
+  box-shadow:
+  0 14px 24px rgba(72,40,255,.28);
+}
+
+.option:active{
+
+  transform:
+  scale(.96);
+}
+
+/* chat */
+
+.chat{
+
+  position:absolute;
+
+  left:50%;
+  bottom:20px;
+
+  transform:translateX(-50%);
+
+  width:300px;
+  height:56px;
+
+  border-radius:30px;
+
+  background:
+  rgba(255,255,255,.18);
+
+  border:
+  1px solid rgba(255,255,255,.35);
+
+  backdrop-filter:
+  blur(4px);
+
+  display:flex;
+  align-items:center;
+
+  padding-left:16px;
+  padding-right:7px;
+}
+
+.chat input{
+
+  flex:1;
+
+  border:none;
+  outline:none;
+
+  background:none;
+
+  color:#333;
+
+  font-size:15px;
+}
+
+.send{
+
+  width:40px;
+  height:40px;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:
+  linear-gradient(
+    135deg,
+    #5cb0ff,
+    #3b8fff
+  );
+
+  color:white;
+
+  font-size:20px;
+
+  cursor:pointer;
+
+  transition:
+  transform .35s cubic-bezier(.2,1.5,.4,1);
+}
+
+.send:hover{
+
+  transform:
+  scale(1.12);
+}
+
+.send:active{
+
+  transform:
+  scale(.92);
+}
+
+/* overlay */
+
+.overlay{
+
+  position:absolute;
+  inset:0;
+
+  background:
+  rgba(255,255,255,.08);
+
+  backdrop-filter:
+  blur(2px);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:.25s;
+
+  z-index:50;
+}
+
+.overlay.show{
+
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* popup */
+
+.popup{
+
+  position:absolute;
+
+  top:50%;
+  left:50%;
+
+  transform:
+  translate(-50%,-50%)
+  scale(.8);
+
+  width:300px;
+
+  border-radius:34px;
+
+  padding:22px;
+
+  background:
+  rgba(255,255,255,.78);
+
+  border:
+  1px solid rgba(255,255,255,.65);
+
+  backdrop-filter:
+  blur(2px);
+
+  box-shadow:
+  0 20px 40px rgba(0,0,0,.10);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+  all .45s cubic-bezier(.2,1.4,.3,1);
+
+  z-index:100;
+}
+
+.popup.show{
+
+  opacity:1;
+  pointer-events:auto;
+
+  transform:
+  translate(-50%,-50%)
+  scale(1);
+}
+
+/* success */
+
+.big-success{
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  text-align:center;
+
+  margin-bottom:18px;
+}
+
+.big-circle{
+
+  width:92px;
+  height:92px;
+
+  border-radius:50%;
+
+  background:#34c759;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  color:white;
+
+  font-size:48px;
+  font-weight:700;
+
+  margin-bottom:16px;
+
+  box-shadow:
+  0 12px 24px rgba(52,199,89,.25);
+
+  animation:
+  bounce .8s cubic-bezier(.2,1.5,.3,1);
+}
+
+@keyframes bounce{
+
+  0%{
+    transform:scale(.5);
+  }
+
+  70%{
+    transform:scale(1.15);
+  }
+
+  100%{
+    transform:scale(1);
+  }
+
+}
+
+.big-success h2{
+
+  color:#222;
+
+  font-size:24px;
+
+  margin-bottom:10px;
+}
+
+.big-success p{
+
+  color:#555;
+
+  line-height:1.5;
+}
+
+/* popup inputs */
+
+.popup input{
+
+  width:100%;
+
+  padding:14px;
+
+  border:none;
+  outline:none;
+
+  border-radius:18px;
+
+  margin-bottom:10px;
+
+  background:
+  rgba(255,255,255,.55);
+
+  font-size:15px;
+}
+
+/* popup buttons */
+
+.popup button{
+
+  width:100%;
+
+  border:none;
+
+  border-radius:18px;
+
+  padding:14px;
+
+  color:white;
+
+  font-size:15px;
+  font-weight:600;
+
+  cursor:pointer;
+
+  margin-top:8px;
+
+  background:
+  linear-gradient(
+    135deg,
+    #ff4747,
+    #e60000
+  );
+
+  transition:
+  transform .35s cubic-bezier(.2,1.5,.4,1);
+}
+
+.popup button:hover{
+
+  transform:
+  scale(1.03);
+}
+
+.popup button:active{
+
+  transform:
+  scale(.95);
+}
+
+.green{
+
+  background:
+  linear-gradient(
+    135deg,
+    #34c759,
+    #14963a
+  ) !important;
+}
+
+.error{
+
+  color:#ff2b2b;
+
+  font-size:13px;
+
+  margin-bottom:10px;
+}
+
+/* apps */
+
+.apps-scroll{
+
+  display:flex;
+
+  gap:14px;
+
+  overflow-x:auto;
+
+  margin-top:16px;
+
+  padding:
+  4px
+  2px
+  12px;
+
+  scroll-behavior:smooth;
+}
+
+.apps-scroll::-webkit-scrollbar{
+
+  height:6px;
+}
+
+.apps-scroll::-webkit-scrollbar-thumb{
+
+  background:
+  rgba(120,120,120,.35);
+
+  border-radius:20px;
+}
+
+.app{
+
+  min-width:92px;
+
+  background:
+  rgba(255,255,255,.45);
+
+  border-radius:20px;
+
+  padding:12px;
+
+  text-align:center;
+
+  transition:
+  transform .35s cubic-bezier(.2,1.5,.4,1);
+}
+
+.app:hover{
+
+  transform:
+  scale(1.06)
+  translateY(-4px);
+}
+
+.app img{
+
+  width:58px;
+  height:58px;
+
+  border-radius:18px;
+
+  object-fit:cover;
+
+  box-shadow:
+  0 5px 12px rgba(0,0,0,.10);
+}
+
+.app span{
+
+  display:block;
+
+  margin-top:8px;
+
+  font-size:12px;
+
+  color:#444;
+}
+
+#map{
+
+  width:100%;
+  height:190px;
+
+  border-radius:24px;
+
+  overflow:hidden;
+
+  margin-top:15px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+<div class="dynamic-island"></div>
+
+<div class="content">
+
+<div class="top">
+
+<div class="red-dot"></div>
+
+<div class="logo">
+SOS Furto
+</div>
+
+</div>
+
+<div class="card">
+
+<p>
+Caso você precise de ajuda,<br>
+digite ou selecione alguma das opções abaixo:
+</p>
+
+<div class="options">
+
+<button class="option" onclick="handleOption('bloquear')">
+Bloquear Dispositivo
+</button>
+
+<button class="option" onclick="handleOption('senhas')">
+Recuperar contas e senhas
+</button>
+
+<button class="option" onclick="handleOption('localizar')">
+Localizar Dispositivo
+</button>
+
+<button class="option" onclick="handleOption('deletar')">
+Deletar dados do dispositivo furtado/perdido
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="chat">
+
+<input
+type="text"
+id="input"
+placeholder="Digite aqui..."
+>
+
+<button
+class="send"
+onclick="sendMessage()">
+↑
+</button>
+
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup"></div>
+
+</div>
+
+<script>
+
+const popup =
+document.getElementById("popup");
+
+const overlay =
+document.getElementById("overlay");
+
+let authenticated = false;
+
+function openPopup(content){
+
+popup.innerHTML = content;
+
+popup.classList.add("show");
+overlay.classList.add("show");
+
+}
+
+function closePopup(){
+
+popup.classList.remove("show");
+overlay.classList.remove("show");
+
+}
+
+overlay.onclick = closePopup;
+
+document
+.getElementById("input")
+.addEventListener(
+"keypress",
+(e)=>{
+
+if(e.key === "Enter"){
+sendMessage();
+}
+
+}
+);
+
+function sendMessage(){
+
+const value =
+document
+.getElementById("input")
+.value
+.toLowerCase();
+
+if(value.includes("bloquear")){
+handleOption("bloquear");
+}
+
+else if(
+value.includes("senha") ||
+value.includes("conta")
+){
+handleOption("senhas");
+}
+
+else if(
+value.includes("localizar")
+){
+handleOption("localizar");
+}
+
+else if(
+value.includes("deletar")
+){
+handleOption("deletar");
+}
+
+}
+
+function validateEmail(email){
+
+return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+.test(email);
+
+}
+
+function handleOption(type){
+
+if(authenticated){
+
+finishAction(type);
+return;
+
+}
+
+openPopup(`
+
+<h2 style="margin-bottom:10px;">
+Confirmação
+</h2>
+
+<p style="
+color:#666;
+margin-bottom:14px;
+line-height:1.5;
+">
+Entre na sua conta para continuar.
+</p>
+
+<input
+type="email"
+id="email"
+placeholder="Seu email">
+
+<div
+id="emailError"
+class="error"></div>
+
+<input
+type="password"
+placeholder="Sua senha">
+
+<button onclick="showCode('${type}')">
+Enviar confirmação
+</button>
+
+`);
+
+}
+
+function showCode(type){
+
+const email =
+document.getElementById("email").value;
+
+const error =
+document.getElementById("emailError");
+
+if(!validateEmail(email)){
+
+error.innerHTML =
+"Digite um email válido.";
+
+return;
+
+}
+
+openPopup(`
+
+<h2 style="margin-bottom:10px;">
+Verificação
+</h2>
+
+<p style="
+color:#666;
+margin-bottom:14px;
+line-height:1.5;
+">
+Digite o código enviado por email.
+</p>
+
+<input
+type="text"
+placeholder="Código">
+
+<button onclick="confirmCode('${type}')">
+Confirmar
+</button>
+
+`);
+
+}
+
+function confirmCode(type){
+
+authenticated = true;
+
+finishAction(type);
+
+}
+
+function finishAction(type){
+
+if(type === "bloquear"){
+
+openPopup(`
+
+<div class="big-success">
+
+<div class="big-circle">
+✓
+</div>
+
+<h2>
+Dispositivo bloqueado
+</h2>
+
+<p>
+O aparelho foi bloqueado
+com sucesso.
+</p>
+
+</div>
+
+<button onclick="closePopup()">
+Fechar
+</button>
+
+`);
+
+}
+
+/* SENHAS */
+
+if(type === "senhas"){
+
+openPopup(`
+
+<div class="big-success">
+
+<div class="big-circle">
+✓
+</div>
+
+<h2>
+Contas recuperadas
+</h2>
+
+<p>
+Apps encontrados no aparelho.
+</p>
+
+</div>
+
+<div class="apps-scroll">
+
+${app("Instagram","https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png")}
+${app("Gmail","https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico")}
+${app("TikTok","https://sf16-sg.tiktokcdn.com/obj/eden-sg/uhtyvueh7nulogpoguhm/tiktok-icon2.png")}
+${app("Spotify","https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg")}
+${app("Discord","https://cdn-icons-png.flaticon.com/512/5968/5968756.png")}
+${app("Chrome","https://upload.wikimedia.org/wikipedia/commons/8/87/Google_Chrome_icon_%282011%29.png")}
+${app("Telegram","https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg")}
+${app("YouTube","https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png")}
+${app("Roblox","https://upload.wikimedia.org/wikipedia/commons/7/7e/Roblox_Logo_2022.jpg")}
+${app("Netflix","https://www.afterbuzztv.com/wp-content/uploads/2023/07/Netflix-Bites-scaled.jpg")}
+${app("Pinterest","https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png")}
+${app("Snapchat","https://upload.wikimedia.org/wikipedia/en/c/c4/Snapchat_logo.svg")}
+${app("Amazon","https://clipground.com/images/amazon-logo-square-4.png")}
+${app("Notion","https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png")}
+${app("Uber","https://turbologo.com/articles/wp-content/uploads/2019/12/Uber-logo.png")}
+${app("Canva","https://img.magnific.com/premium-photo/canva-logo-illustration-icon_895118-4442.jpg")}
+${app("CapCut","https://static.vecteezy.com/system/resources/previews/055/030/400/non_2x/capcut-square-icon-logo-symbol-free-png.png")}
+${app("X","https://tse3.mm.bing.net/th/id/OIP.e62uIti__6ai-bXs6quo-wHaE9?rs=1&pid=ImgDetMain&o=7&rm=3")}
+${app("Reddit","https://upload.wikimedia.org/wikipedia/en/b/bd/Reddit_Logo_Icon.svg")}
+${app("Duolingo","https://loghi-famosi.com/wp-content/uploads/2021/04/Duolingo-Logo.png")}
+${app("Steam","https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg")}
+${app("Twitch","https://is2-ssl.mzstatic.com/image/thumb/Purple114/v4/4a/a7/a3/4aa7a384-4eb7-1532-3fae-fe30bc5bf292/source/512x512bb.jpg")}
+${app("Facebook","https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png")}
+${app("Messenger","https://upload.wikimedia.org/wikipedia/commons/b/be/Facebook_Messenger_logo_2020.svg")}
+${app("LinkedIn","https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png")}
+
+</div>
+
+<button class="green">
+Passar tudo pro novo celular
+</button>
+
+<button onclick="downloadPasswords()">
+Baixar minhas senhas
+</button>
+
+`);
+
+}
+
+if(type === "localizar"){
+
+openPopup(`
+
+<div class="big-success">
+
+<div class="big-circle">
+✓
+</div>
+
+<h2>
+Dispositivo encontrado
+</h2>
+
+<p>
+Última localização:
+Oslo, Noruega
+</p>
+
+</div>
+
+<div id="map"></div>
+
+<button onclick="closePopup()">
+Fechar
+</button>
+
+`);
+
+setTimeout(()=>{
+
+const map =
+L.map('map').setView(
+[59.9139,10.7522],
+13
+);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+attribution:''
+}
+).addTo(map);
+
+L.marker(
+[59.9139,10.7522]
+).addTo(map);
+
+},100);
+
+}
+
+if(type === "deletar"){
+
+confirmDelete1();
+
+}
+
+}
+
+function app(name,img){
+
+return `
+
+<div class="app">
+
+<img src="${img}">
+
+<span>${name}</span>
+
+</div>
+
+`;
+
+}
+
+function downloadPasswords(){
+
+const senhas = `
+
+Instagram: insta123
+Gmail: gmail456
+TikTok: tiktok999
+Spotify: spotify321
+Discord: discord777
+Chrome: chrome111
+Telegram: telegram333
+Netflix: netflix456
+Pinterest: pin123
+Snapchat: snap999
+Amazon: amazon777
+Notion: notion555
+Uber: uber111
+Canva: canva123
+CapCut: capcut999
+X: twitter777
+Reddit: reddit444
+Duolingo: duo123
+Steam: steam777
+Twitch: twitch111
+Facebook: face222
+Messenger: msg333
+LinkedIn: linkedin444
+
+`;
+
+const blob =
+new Blob(
+[senhas],
+{ type:'text/plain' }
+);
+
+const a =
+document.createElement('a');
+
+a.href =
+URL.createObjectURL(blob);
+
+a.download =
+'minhas_senhas.txt';
+
+a.click();
+
+}
+
+function confirmDelete1(){
+
+openPopup(`
+
+<h2 style="margin-bottom:10px;">
+Tem certeza?
+</h2>
+
+<p style="
+color:#666;
+line-height:1.5;
+">
+Todos os dados serão apagados.
+</p>
+
+<button onclick="confirmDelete2()">
+Continuar
+</button>
+
+`);
+
+}
+
+function confirmDelete2(){
+
+openPopup(`
+
+<h2 style="margin-bottom:10px;">
+Certeza MESMO?
+</h2>
+
+<p style="
+color:#666;
+line-height:1.5;
+">
+Isso não poderá ser desfeito.
+</p>
+
+<button onclick="confirmDelete3()">
+Sim, continuar
+</button>
+
+`);
+
+}
+
+function confirmDelete3(){
+
+openPopup(`
+
+<h2 style="margin-bottom:10px;">
+Última confirmação
+</h2>
+
+<p style="
+color:#666;
+line-height:1.5;
+">
+De verdade mesmo?
+</p>
+
+<button onclick="deleteDone()">
+Apagar tudo
+</button>
+
+`);
+
+}
+
+function deleteDone(){
+
+openPopup(`
+
+<div class="big-success">
+
+<div class="big-circle">
+✓
+</div>
+
+<h2>
+Dados deletados
+</h2>
+
+<p>
+O dispositivo foi resetado
+remotamente.
+</p>
+
+</div>
+
+<button onclick="closePopup()">
+Fechar
+</button>
+
+`);
+
+}
+
+
+</script>
+
+</body>
+</html>
