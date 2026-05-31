@@ -917,7 +917,7 @@ class="error"></div>
 type="password"
 placeholder="Sua senha">
 
-<button onclick="showCode('${type}')">
+<button onclick="showKeyword('${type}')">
 Enviar confirmação
 </button>
 
@@ -925,7 +925,7 @@ Enviar confirmação
 
 }
 
-function showCode(type){
+function showKeyword(type){
 
 const email =
 document.getElementById("email").value;
@@ -945,7 +945,7 @@ return;
 openPopup(`
 
 <h2 style="margin-bottom:10px;">
-Verificação
+Confirmação de Identidade
 </h2>
 
 <p style="
@@ -953,20 +953,53 @@ color:#666;
 margin-bottom:14px;
 line-height:1.5;
 ">
-Digite o código enviado por email.
+Digite sua palavra-chave definida no dispositivo perdido.<br>
+Dica: Comida favorita.
 </p>
 
 <input
-type="text"
-placeholder="Código">
+type="password"
+id="keyword"
+placeholder="Palavra-chave">
 
-<button onclick="confirmCode('${type}')">
+<div
+id="keywordError"
+class="error"></div>
+
+<button onclick="confirmKeyword('${type}')">
 Confirmar
 </button>
 
 `);
 
 }
+
+function confirmKeyword(type){
+
+const keyword =
+document.getElementById("keyword").value;
+
+const error =
+document.getElementById("keywordError");
+
+/* palavra-chave de exemplo */
+const savedKeyword = "pizza";
+
+if(keyword !== savedKeyword){
+
+error.innerHTML =
+"Palavra-chave incorreta.";
+
+return;
+
+}
+
+authenticated = true;
+
+finishAction(type);
+
+}
+
 
 function confirmCode(type){
 
